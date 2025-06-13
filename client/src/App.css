@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jersey+25&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fascinate&display=swap');
+@import "tailwindcss";
+
+@theme {
+    --color-primary: rgb(160, 82, 45);
+    --color-secondary: rgb(210, 180, 140);
+    --color-accent: rgb(255, 99, 71);
+    --color-background: #FCD7AD;
+    --color-text-primary: rgb(62, 39, 35);
+    --color-text-secondary: rgb(109, 76, 65);
+    --font-custom: "Jersey 25", sans-serif;
+    --font-secondary: "Fascinate", system-ui;
+}
+
+@layer base {
+    body {
+        background-color: oklch(98.7% 0.022 95.277);
+        font-family: "Quicksand", sans-serif;
+        font-weight: 700;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+}

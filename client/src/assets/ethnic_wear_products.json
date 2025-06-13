@@ -1,0 +1,110 @@
+[
+  {
+    "_id": "mew001",
+    "name": "Classic Beige Kurta",
+    "category": "Men's Ethnic Wear",
+    "price": 1499,
+    "offerPrice": 1299,
+    "image": [
+      "https://source.unsplash.com/400x400/?kurta,men"
+    ],
+    "description": [
+      "Pure cotton fabric",
+      "Mandarin collar design",
+      "Perfect for festive and traditional events"
+    ],
+    "createdAt": "2025-06-06T13:37:58.741242",
+    "updatedAt": "2025-06-06T13:37:58.741242",
+    "inStock": true
+  },
+  {
+    "_id": "mew002",
+    "name": "Nehru Jacket Set",
+    "category": "Men's Ethnic Wear",
+    "price": 2399,
+    "offerPrice": 1999,
+    "image": [
+      "https://source.unsplash.com/400x400/?nehru,jacket"
+    ],
+    "description": [
+      "Includes Kurta, Churidar & Nehru jacket",
+      "Elegant brocade texture",
+      "Ideal for weddings and celebrations"
+    ],
+    "createdAt": "2025-06-06T13:37:58.741242",
+    "updatedAt": "2025-06-06T13:37:58.741242",
+    "inStock": true
+  },
+  {
+    "_id": "mew003",
+    "name": "Navy Blue Pathani Suit",
+    "category": "Men's Ethnic Wear",
+    "price": 1699,
+    "offerPrice": 1499,
+    "image": [
+      "https://source.unsplash.com/400x400/?pathani,men"
+    ],
+    "description": [
+      "Relaxed fit",
+      "Soft blended cotton fabric",
+      "Great for everyday ethnic style"
+    ],
+    "createdAt": "2025-06-06T13:37:58.741242",
+    "updatedAt": "2025-06-06T13:37:58.741242",
+    "inStock": false
+  },
+  {
+    "_id": "wew001",
+    "name": "Floral Anarkali Suit",
+    "category": "Women's Ethnic Wear",
+    "price": 2499,
+    "offerPrice": 2199,
+    "image": [
+      "https://source.unsplash.com/400x400/?anarkali,women"
+    ],
+    "description": [
+      "Floor-length Anarkali with dupatta",
+      "Soft georgette fabric",
+      "Perfect for festivals and functions"
+    ],
+    "createdAt": "2025-06-06T13:37:58.741242",
+    "updatedAt": "2025-06-06T13:37:58.741242",
+    "inStock": true
+  },
+  {
+    "_id": "wew002",
+    "name": "Banarasi Silk Saree",
+    "category": "Women's Ethnic Wear",
+    "price": 3999,
+    "offerPrice": 3499,
+    "image": [
+      "https://source.unsplash.com/400x400/?banarasi,saree"
+    ],
+    "description": [
+      "Traditional zari work",
+      "Rich silk finish",
+      "Ideal for weddings and poojas"
+    ],
+    "createdAt": "2025-06-06T13:37:58.741242",
+    "updatedAt": "2025-06-06T13:37:58.741242",
+    "inStock": true
+  },
+  {
+    "_id": "wew003",
+    "name": "Cotton Straight Kurti",
+    "category": "Women's Ethnic Wear",
+    "price": 999,
+    "offerPrice": 849,
+    "image": [
+      "https://source.unsplash.com/400x400/?kurti,women"
+    ],
+    "description": [
+      "Breathable and comfortable",
+      "Printed design with 3/4 sleeves",
+      "Daily wear ethnic essential"
+    ],
+    "createdAt": "2025-06-06T13:37:58.741242",
+    "updatedAt": "2025-06-06T13:37:58.741242",
+    "inStock": true
+  }
+]
