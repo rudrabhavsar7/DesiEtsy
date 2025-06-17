@@ -1,3 +1,4 @@
+import React,{useEffect} from 'react'
 import Home from './pages/Home'
 import Navbar from './components/Navbar'
 import './App.css'
@@ -22,7 +23,14 @@ function App() {
 
   const isAdminPath = useLocation().pathname.includes('/admin');
   const isArtisanPath = useLocation().pathname.includes('/artisan');
-  const {showUserLogin,isSeller,isAdmin} = useAppContext();
+  const { showUserLogin, isSeller, isAdmin, fetchSeller } = useAppContext();
+
+  useEffect(() => {
+    if (isArtisanPath) {
+      fetchSeller();
+    }
+  }, [isArtisanPath]);
+
   return (
     <>
     <Toaster />

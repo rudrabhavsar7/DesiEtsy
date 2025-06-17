@@ -29,7 +29,6 @@ export const AppProvider = ({ children }) => {
         withCredentials: true,
       });
 
-      console.log("User fetched successfully", data);
       if (data.success) {
         setUser(data.user);
         setShowUserLogin(false);
@@ -41,6 +40,22 @@ export const AppProvider = ({ children }) => {
     } catch (error) {
       setUser(null);
       setCartItems([]);
+    }
+  };
+
+  const fetchSeller = async () => {
+    try {
+      const { data } = await axios.get(`/api/artisan/is-auth`, {
+        withCredentials: true,
+      });
+      if(data.success){
+        setIsSeller(data.artisan);
+      }
+      else{
+        setIsSeller(false);
+      }
+    } catch (error) {
+      console.error(error.message);
     }
   };
   //add product to cart
@@ -139,13 +154,12 @@ export const AppProvider = ({ children }) => {
   //get cart total price
   const getCartAmount = () => {
     let totalPrice = 0;
-    for (const items in cartItems) {
-      const id = items.split("_")[0];
-      let product = products.find((item) => item._id === id);
-      if (cartItems[items].quantity > 0 && product) {
-        totalPrice += product.offerPrice * cartItems[items].quantity;
+    cartItems.map((item) => {
+      const product = products.find((product) => product._id === item.productId);
+      if (product) {
+        totalPrice += product.offerPrice * item.quantity;
       }
-    }
+    })
     return Math.floor(totalPrice * 100) / 100;
   };
 
@@ -194,6 +208,11 @@ export const AppProvider = ({ children }) => {
         BACKEND_URL,
         axios,
         toast,
+        isSeller,
+        setIsSeller,
+        isAdmin,
+        setIsAdmin,
+        fetchSeller
       }}
     >
       {children}
