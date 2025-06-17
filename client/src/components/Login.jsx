@@ -3,11 +3,45 @@ import { useAppContext } from '../context/AppContext'
 import { motion } from 'framer-motion'
 
 const Login = () => {
-  const { setUser, setShowUserLogin } = useAppContext()
+  const { setUser, setShowUserLogin,user,BACKEND_URL,axios,toast,fetchUser } = useAppContext()
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
 
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+      try {
+        if (isSignUp) {
+          const { data } = await axios.post(`${BACKEND_URL}/api/user/register`, {
+            name,
+            email,
+            password,
+          });
+
+          if (data.success) {
+            fetchUser();
+            toast.success("Account Created Successfully");
+          }
+
+          console.log(data);
+        } else {
+          const { data } = await axios.post(`${BACKEND_URL}/api/user/login`, {
+            email,
+            password,
+          });
+
+          if (data.success) {
+            fetchUser();
+            toast.success("Logged In Successfully");
+          }
+
+          console.log(data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+  }
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -38,14 +72,24 @@ const Login = () => {
         </div>
 
         <form 
-          onSubmit={(e) => {
-            e.preventDefault();
-            setUser(true);
-            setShowUserLogin(false);
-            // Handle login logic here
-          }}
+          onSubmit={handleSubmit}
           className="space-y-4"
         >
+          {isSignUp && (
+            <div className="space-y-2">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+              <input 
+                type="text" 
+                onChange={(e) => setName(e.target.value)} 
+                id="name" 
+                name="name" 
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-900 focus:border-transparent transition-all"
+                placeholder="Your Name"
+              />
+            </div>
+          )}
+
           <div className="space-y-2">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
             <input 
@@ -71,20 +115,6 @@ const Login = () => {
               placeholder="••••••••"
             />
           </div>
-          
-          {isSignUp && (
-            <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
-              <input 
-                type="password" 
-                id="confirmPassword" 
-                name="confirmPassword" 
-                required={isSignUp}
-                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-900 focus:border-transparent transition-all"
-                placeholder="••••••••"
-              />
-            </div>
-          )}
           
           <div className="flex items-center justify-between">
             <div className="flex items-center">

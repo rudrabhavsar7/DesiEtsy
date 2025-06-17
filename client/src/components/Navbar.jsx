@@ -11,8 +11,33 @@ import { NavLink, Link } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 
 const Navbar = () => {
-  const { setShowUserLogin, user, setUser, getCartCount, navigate } =
-    useAppContext();
+  const {
+    setShowUserLogin,
+    user,
+    setUser,
+    getCartCount,
+    navigate,
+    axios,
+    BACKEND_URL,
+    toast
+  } = useAppContext();
+
+  const handleLogout = async () => {
+    try {
+      const {data} = await axios.post(`${BACKEND_URL}/api/user/logout`);
+
+       if(data.success){
+        setUser(null);
+        navigate('/');
+        toast.success("Logged Out");
+      }
+      else{
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
   const navItems = [
     {
       name: "Home",
@@ -112,7 +137,7 @@ const Navbar = () => {
                   Orders
                 </li>
                 <li
-                  onClick={() => setUser(null)}
+                  onClick={handleLogout}
                   className="px-4 py-2 hover:bg-secondary/10 cursor-pointer"
                 >
                   Logout
@@ -173,18 +198,24 @@ const Navbar = () => {
                   setOpen(false);
                 }}
                 className={`flex items-center p-3 w-full justify-center rounded-full hover:bg-amber-100 transition-colors ${
-                  activeTab === item.name ? "bg-amber-900 text-white" : "text-amber-900"
+                  activeTab === item.name
+                    ? "bg-amber-900 text-white"
+                    : "text-amber-900"
                 }`}
               >
-                <img 
-                  src={activeTab === item.name ? item.logos.active : item.logos.closed} 
-                  className="h-5 mr-2" 
-                  alt={item.name} 
+                <img
+                  src={
+                    activeTab === item.name
+                      ? item.logos.active
+                      : item.logos.closed
+                  }
+                  className="h-5 mr-2"
+                  alt={item.name}
                 />
                 <span className="text-sm font-medium">{item.name}</span>
               </NavLink>
             ))}
-            
+
             {user ? (
               <>
                 <NavLink
@@ -195,10 +226,7 @@ const Navbar = () => {
                   <span className="text-sm font-medium">Orders</span>
                 </NavLink>
                 <button
-                  onClick={() => {
-                    setUser(null);
-                    setOpen(false);
-                  }}
+                  onClick={handleLogout}
                   className="flex items-center p-3 w-full justify-center rounded-full hover:bg-amber-100 transition-colors text-amber-900"
                 >
                   <span className="text-sm font-medium">Logout</span>

@@ -1,23 +1,50 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import products from "../assets/products.js";
 import categories from "../assets/categories.js";
 import subcategories from "../assets/subcategories.js";
+import axios from "axios";
 
 const AppContext = createContext();
-
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 export const AppProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [showUserLogin, setShowUserLogin] = useState(false);
-  const [showAddress, setShowAddress] = useState(false);
+  const [isSeller, setIsSeller] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const currency = "₹";
 
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+  const fetchUser = async () => {
+    try {
+      const { data } = await axios.get(`/api/user/is-auth`, {
+        withCredentials: true,
+      });
+
+      console.log("User fetched successfully", data);
+      if (data.success) {
+        setUser(data.user);
+        setShowUserLogin(false);
+        setCartItems(data.user.cart);
+      } else {
+        setUser(false);
+        setCartItems([]);
+      }
+    } catch (error) {
+      setUser(null);
+      setCartItems([]);
+    }
+  };
   //add product to cart
   const addToCart = (itemId, selectedSize) => {
-    let cartData = structuredClone(cartItems);
     const findProduct = products.find((product) => product._id === itemId);
 
     if (!findProduct) {
@@ -28,33 +55,50 @@ export const AppProvider = ({ children }) => {
     const hasSizes =
       Array.isArray(findProduct.sizes) && findProduct.sizes.length > 0;
 
-    // If product has sizes but size is not selected
     if (hasSizes && !selectedSize) {
       toast.error("Please select a size");
       return;
     }
 
-    // Create unique key for sized products
-    const itemKey = selectedSize ?  itemId + "_" + selectedSize : itemId ;
+    let updatedCart = [...cartItems]; // Clone the current cart
 
-    if (cartData[itemKey] && cartData[itemKey].size ===selectedSize) {
-      cartData[itemKey].quantity += 1;
+    // Find if item already exists in cart with the same size
+    const existingItemIndex = updatedCart.findIndex(
+      (item) =>
+        item.productId === itemId &&
+        item.size === (hasSizes ? selectedSize : null)
+    );
+
+    if (existingItemIndex !== -1) {
+      updatedCart[existingItemIndex].quantity += 1;
     } else {
-      cartData[itemKey] = {
+      updatedCart.push({
+        productId: itemId,
         quantity: 1,
         size: hasSizes ? selectedSize : null,
-      };
+      });
     }
-    setCartItems(cartData);
+
+    setCartItems(updatedCart);
     toast.success("Added to cart");
   };
 
   //update cart item
 
   const updateCartItem = (itemId, quantity) => {
-    let cartData = structuredClone(cartItems);
+    const id = itemId.split("_")[0];
+    const size = itemId.split("_")[1];
 
-    cartData[itemId].quantity = Number(quantity);
+    let cartData = structuredClone(cartItems);
+    console.log(cartData);
+
+    const product = size
+      ? (cartData.find(
+          (item) => item.productId === id && item?.size === size
+        ).quantity = Number(quantity))
+      : (cartData.find((item) => item.productId === id).quantity =
+          Number(quantity));
+    console.log(product);
     setCartItems(cartData);
     toast.success("Cart Updated");
   };
@@ -62,15 +106,25 @@ export const AppProvider = ({ children }) => {
   //remove product from cart
 
   const removeFromCart = (itemId) => {
+    const id = itemId.split("_")[0];
+    const size = itemId.split("_")[1];
+
     let cartData = structuredClone(cartItems);
-    if (cartData[itemId]) {
-      cartData[itemId] -= 1;
-      if (cartData[itemId] === 0) {
-        delete cartData[itemId];
-      }
+    const product = size
+      ? (cartData.find(
+          (item) => item.productId === id && item?.size === size
+        ))
+      : (cartData.find((item) => item.productId === id));
+
+    if (product && product.quantity-1 === 0) {
+      cartData = cartData.filter((item) => item.productId!== id);
     }
-    toast.success("Removed From Cart");
+    else{
+      cartData.find((item) => item.productId === id).quantity -= 1;
+    }
+    console.log(product);
     setCartItems(cartData);
+    toast.success("Removed From Cart");
   };
 
   //get cart items count
@@ -86,7 +140,7 @@ export const AppProvider = ({ children }) => {
   const getCartAmount = () => {
     let totalPrice = 0;
     for (const items in cartItems) {
-      const id = items.split("_")[0]
+      const id = items.split("_")[0];
       let product = products.find((item) => item._id === id);
       if (cartItems[items].quantity > 0 && product) {
         totalPrice += product.offerPrice * cartItems[items].quantity;
@@ -94,6 +148,29 @@ export const AppProvider = ({ children }) => {
     }
     return Math.floor(totalPrice * 100) / 100;
   };
+
+  //update cart items
+  useEffect(() => {
+    const updateCart = async () => {
+      console.log(cartItems);
+      try {
+        const { data } = await axios.post("/api/cart/update", {
+          userId: user._id, // pass userId from the user object
+          cartItems,
+        });
+        if (data.success) {
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+    if (user) {
+      updateCart();
+    }
+  }, [cartItems]);
 
   return (
     <AppContext.Provider
@@ -113,8 +190,10 @@ export const AppProvider = ({ children }) => {
         products,
         categories,
         subcategories,
-        showAddress,
-        setShowAddress,
+        fetchUser,
+        BACKEND_URL,
+        axios,
+        toast,
       }}
     >
       {children}

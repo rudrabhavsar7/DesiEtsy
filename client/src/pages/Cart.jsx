@@ -7,41 +7,65 @@ const Cart = () => {
     cartItems,
     categories,
     products,
-    showAddress,
-    setShowAddress,
     getCartCount,
     currency,
     updateCartItem,
     removeFromCart,
     getCartAmount,
-    navigate
+    navigate,
+    user,
+    toast,
+    axios
   } = useAppContext();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState("COD");
+  const [showAddress, setShowAddress] = useState(false);
+  const [address, setAddress] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState([]);
 
-  const productsList = Object.entries(cartItems).map(([item, cartItem]) => {
-    const id = item.split("_");
-    const productId = id[0];
-    const size = id[1];
-    const quantity = cartItem.quantity;
+  const getUserAddress = async () => {
+    try {
+      const { data } = await axios.get("/api/address/get");
+      console.log(data);
+      if (data.success) {
+        setAddress(data.addresses);
+        setSelectedAddress(data.addresses[0]);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
-    const product = products.find((product) => (
-      product._id === productId
-    ));
+   useEffect(() => {
+        if(user){
+            getUserAddress();
+        }
+    },[user]);
 
-    return {
-      id: item, // Store the full ID for removal
-      size,
-      quantity,
-      ...product
-    };
-  });
+ const productsList =
+  (cartItems &&
+    cartItems.map((cartItem) => {
+      const { productId, size, quantity } = cartItem;
+
+      const product = products.find((product) => product._id === productId);
+
+      return {
+        id: productId + (size ? `_${size}` : ""),
+        size,
+        quantity,
+        ...product,
+      };
+    })) ||
+  [];
+
 
   const handleRemoveItem = (itemId) => {
     removeFromCart(itemId);
   };
-  
+
   const handlePlaceOrder = () => {
     setIsProcessing(true);
     // Simulate order processing
@@ -51,7 +75,7 @@ const Cart = () => {
       alert("Order placed successfully!");
       // Clear cart and redirect to home page
       // clearCart(); // You would need to implement this in your context
-      navigate('/');
+      navigate("/");
     }, 1500);
   };
 
@@ -59,22 +83,43 @@ const Cart = () => {
   if (productsList.length === 0) {
     return (
       <div className="min-h-screen w-full flex flex-col justify-center items-center bg-amber-50 px-4 py-10">
-        <motion.div 
+        <motion.div
           className="max-w-md w-full p-8 bg-white rounded-2xl border-2 border-amber-900 text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           <div className="flex justify-center mb-6">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16 6V5.5C16 3.567 14.433 2 12.5 2h-1C9.567 2 8 3.567 8 5.5V6H4v16h16V6h-4zm-6-0.5C10 4.673 10.673 4 11.5 4h1c0.827 0 1.5 0.673 1.5 1.5V6h-4V5.5z" stroke="#7b3306" strokeWidth="1.5" fill="none"/>
-              <path d="M9 11l1.5 1.5L15 8" stroke="#7b3306" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg
+              width="80"
+              height="80"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 6V5.5C16 3.567 14.433 2 12.5 2h-1C9.567 2 8 3.567 8 5.5V6H4v16h16V6h-4zm-6-0.5C10 4.673 10.673 4 11.5 4h1c0.827 0 1.5 0.673 1.5 1.5V6h-4V5.5z"
+                stroke="#7b3306"
+                strokeWidth="1.5"
+                fill="none"
+              />
+              <path
+                d="M9 11l1.5 1.5L15 8"
+                stroke="#7b3306"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
-          <h2 className="text-2xl font-custom font-medium mb-4">Your cart is empty</h2>
-          <p className="text-gray-500 mb-6">Looks like you haven't added any items to your cart yet.</p>
-          <button 
-            onClick={() => navigate('/products')}
+          <h2 className="text-2xl font-custom font-medium mb-4">
+            Your cart is empty
+          </h2>
+          <p className="text-gray-500 mb-6">
+            Looks like you haven't added any items to your cart yet.
+          </p>
+          <button
+            onClick={() => navigate("/products")}
             className="w-full py-3 bg-amber-900 text-white font-medium rounded-full hover:bg-amber-800 transition"
           >
             Continue Shopping
@@ -86,7 +131,7 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen w-full flex justify-center items-start bg-amber-50 px-4 py-6 md:py-10 mt-15">
-      <motion.div 
+      <motion.div
         className="flex flex-col md:flex-row max-w-6xl w-full border-2 rounded-2xl bg-white border-amber-900 overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -122,9 +167,11 @@ const Cart = () => {
               >
                 {/* Product Info - Full width on mobile */}
                 <div className="flex items-start md:items-center gap-3 md:gap-4">
-                  <div 
+                  <div
                     className="cursor-pointer w-20 h-20 md:w-24 md:h-24 flex items-center justify-center border border-gray-300 rounded overflow-hidden"
-                    onClick={() => navigate(`/products/${product.category}/${product._id}`)}
+                    onClick={() =>
+                      navigate(`/products/${product.category}/${product._id}`)
+                    }
                   >
                     <img
                       className="w-full h-full object-cover"
@@ -139,14 +186,18 @@ const Cart = () => {
                     <div className="font-normal text-gray-500 mt-1 space-y-1">
                       {product.size && (
                         <p className="text-xs md:text-sm">
-                          Size: <span className="font-medium">{product.size}</span>
+                          Size:{" "}
+                          <span className="font-medium">{product.size}</span>
                         </p>
                       )}
                       <div className="flex items-center">
                         <p className="text-xs md:text-sm mr-1">Qty:</p>
                         <select
                           onChange={(e) => {
-                            updateCartItem(product.id, parseInt(e.target.value));
+                            updateCartItem(
+                              product.id,
+                              parseInt(e.target.value)
+                            );
                           }}
                           value={product.quantity}
                           className="outline-none border border-gray-300 rounded px-1 py-0.5 text-xs md:text-sm"
@@ -160,13 +211,14 @@ const Cart = () => {
                             ))}
                         </select>
                       </div>
-                      
+
                       {/* Price - Mobile only */}
                       <div className="md:hidden flex justify-between items-center mt-2">
                         <p className="text-sm font-medium">
-                          {currency}{(product.offerPrice * product.quantity).toFixed(2)}
+                          {currency}
+                          {(product.offerPrice * product.quantity).toFixed(2)}
                         </p>
-                        <button 
+                        <button
                           onClick={() => handleRemoveItem(product.id)}
                           className="text-red-500 text-xs flex items-center"
                         >
@@ -176,15 +228,16 @@ const Cart = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Subtotal - Desktop only */}
                 <p className="hidden md:block text-center font-medium">
-                  {currency}{(product.offerPrice * product.quantity).toFixed(2)}
+                  {currency}
+                  {(product.offerPrice * product.quantity).toFixed(2)}
                 </p>
-                
+
                 {/* Action - Desktop only */}
                 <div className="hidden md:flex justify-center">
-                  <button 
+                  <button
                     onClick={() => handleRemoveItem(product.id)}
                     className="cursor-pointer hover:bg-red-50 p-2 rounded-full transition-colors"
                     aria-label="Remove item"
@@ -210,9 +263,9 @@ const Cart = () => {
             ))}
           </div>
 
-          <button 
-            className="group cursor-pointer flex items-center mt-6 gap-2 text-amber-900 font-medium hover:underline" 
-            onClick={() => navigate('/products')}
+          <button
+            className="group cursor-pointer flex items-center mt-6 gap-2 text-amber-900 font-medium hover:underline"
+            onClick={() => navigate("/products")}
           >
             <svg
               width="15"
@@ -241,10 +294,16 @@ const Cart = () => {
 
           <div className="mb-6 space-y-4">
             <div>
-              <p className="text-sm font-medium uppercase mb-2">Delivery Address</p>
+              <p className="text-sm font-medium uppercase mb-2">
+                Delivery Address
+              </p>
               <div className="relative">
                 <div className="flex justify-between items-start">
-                  <p className="text-gray-500 text-sm">No address found</p>
+                  <p className="text-gray-500">
+                    {selectedAddress
+                      ? `${selectedAddress.street},${selectedAddress.city},${selectedAddress.state},${selectedAddress.country}`
+                      : "No address found"}
+                  </p>
                   <button
                     onClick={() => setShowAddress(!showAddress)}
                     className="text-amber-900 text-sm hover:underline cursor-pointer"
@@ -252,17 +311,24 @@ const Cart = () => {
                     {showAddress ? "Close" : "Change"}
                   </button>
                 </div>
-                
+
                 {showAddress && (
                   <div className="absolute top-full left-0 right-0 mt-2 py-2 bg-white border border-gray-300 shadow-md rounded-b-lg">
+                    {address.map((add) => (
+                      <p
+                        key={add._id}
+                        onClick={() => {
+                          setSelectedAddress(add);
+                          setShowAddress(false);
+                        }}
+                        className="text-gray-500 px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      >{add.street}, {add.city}, {add.state}, {add.country}</p>
+                    ))}
                     <p
-                      onClick={() => setShowAddress(false)}
-                      className="text-gray-500 px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    >
-                      New York, USA
-                    </p>
-                    <p
-                      onClick={() => setShowAddress(false)}
+                      onClick={() => {
+                        navigate("/add-address");
+                        setShowAddress(false);
+                      }}
                       className="text-amber-900 px-4 py-2 hover:bg-amber-50 cursor-pointer"
                     >
                       Add address
@@ -273,10 +339,12 @@ const Cart = () => {
             </div>
 
             <div>
-              <p className="text-sm font-medium uppercase mb-2">Payment Method</p>
-              <select 
-                value={selectedPayment} 
-                onChange={(e) => setSelectedPayment(e.target.value)} 
+              <p className="text-sm font-medium uppercase mb-2">
+                Payment Method
+              </p>
+              <select
+                value={selectedPayment}
+                onChange={(e) => setSelectedPayment(e.target.value)}
                 className="w-full border border-gray-300 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
                 <option value="COD">Cash On Delivery</option>
@@ -290,7 +358,10 @@ const Cart = () => {
           <div className="text-gray-500 mt-4 space-y-2">
             <p className="flex justify-between">
               <span>Price</span>
-              <span>{currency}{getCartAmount().toFixed(2)}</span>
+              <span>
+                {currency}
+                {getCartAmount().toFixed(2)}
+              </span>
             </p>
             <p className="flex justify-between">
               <span>Shipping Fee</span>
@@ -298,20 +369,28 @@ const Cart = () => {
             </p>
             <p className="flex justify-between">
               <span>Tax (2%)</span>
-              <span>{currency}{(getCartAmount() * 0.02).toFixed(2)}</span>
+              <span>
+                {currency}
+                {(getCartAmount() * 0.02).toFixed(2)}
+              </span>
             </p>
             <p className="flex justify-between text-lg font-medium mt-3">
               <span>Total Amount:</span>
-              <span>{currency}{(getCartAmount() + (getCartAmount() * 0.02)).toFixed(2)}</span>
+              <span>
+                {currency}
+                {(getCartAmount() + getCartAmount() * 0.02).toFixed(2)}
+              </span>
             </p>
           </div>
 
-          <button 
-            className={`w-full py-3 mt-6 cursor-pointer bg-amber-900 text-white font-medium hover:bg-amber-800 transition ${isProcessing ? 'opacity-75 cursor-not-allowed' : ''}`}
+          <button
+            className={`w-full py-3 mt-6 cursor-pointer bg-amber-900 text-white font-medium hover:bg-amber-800 transition ${
+              isProcessing ? "opacity-75 cursor-not-allowed" : ""
+            }`}
             onClick={handlePlaceOrder}
             disabled={isProcessing}
           >
-            {isProcessing ? 'Processing...' : 'Place Order'}
+            {isProcessing ? "Processing..." : "Place Order"}
           </button>
         </div>
       </motion.div>
