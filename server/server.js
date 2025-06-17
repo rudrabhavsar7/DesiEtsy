@@ -7,7 +7,8 @@ import cookieParser from "cookie-parser";
 import userRouter from './Routes/UserRoutes.js'
 import addressRouter from "./Routes/AddressRoutes.js";
 import cartRouter from "./Routes/CartRoutes.js";
-import artisanRouter from "./routes/ArtisanRoute.js";
+import artisanRouter from "./Routes/ArtisanRoute.js";
+import adminRouter from "./Routes/AdminRoutes.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/api/user',userRouter);
 app.use('/api/address', addressRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/artisan', artisanRouter);
+app.use('/api/admin', adminRouter);
 
 connectDB();
 

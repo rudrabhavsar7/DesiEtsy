@@ -1,10 +1,10 @@
-import React,{useEffect} from 'react'
+import React, { useEffect } from 'react'
 import Home from './pages/Home'
 import Navbar from './components/Navbar'
 import './App.css'
 import { useAppContext } from './context/AppContext'
 import Login from './components/Login'
-import {Toaster} from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Cart from './pages/Cart' 
 import Subcategories from './pages/Subcategories'
@@ -13,6 +13,7 @@ import SubcategoryProducts from './pages/SubcategoryProducts'
 import ProductDetails from './components/ProductDetails'
 import Orders from './pages/Orders'
 import AdminDashboard from './pages/Admin/AdminDashboard'
+import AdminLogin from './components/admin/AdminLogin' // Import the new component
 
 // Artisan Dashboard
 import ArtisanDashboard from './pages/Artisan/ArtisanDashboard'
@@ -46,13 +47,12 @@ function App() {
       <Route path="/orders" element={<Orders/>} />
       <Route path='/add-address' element={<Address/>}/>
       
-      {/* Artisan Dashboard Route */}
-      {isArtisanPath && <Route path="/artisan-dashboard" element={isSeller ? <ArtisanDashboard /> : <ArtisanRegister/>} />}
-
-      {/* Admin Dashboard Route */}
-      {isAdminPath && <Route path="/admin" element={<AdminDashboard />} >
-        <Route index primary path='login' element={<Login />} />
-      </Route>}
+      {/* Artisan Routes */}
+      <Route path="/artisan/*" element={isSeller ? <ArtisanDashboard /> : <ArtisanRegister/>} />
+      
+      {/* Admin Routes */}
+      <Route path="/admin" element={<AdminLogin />} />
+      <Route path="/admin/dashboard/*" element={isAdmin ? <AdminDashboard /> : <AdminLogin />} />
     </Routes>
     </>
   )
