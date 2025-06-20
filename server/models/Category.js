@@ -19,6 +19,18 @@ const categoriesSchema = new mongoose.Schema({
     },
 })
 
+categoriesSchema.pre("findOneAndDelete", async function (next) {
+  const doc = await this.model.findOne(this.getFilter());
+
+  console.log(doc);
+  if (doc) {
+    await Subcategory.deleteMany({ category: doc.path });
+    console.log(`Subcategories for Category '${doc.title}' deleted`);
+  }
+
+  next();
+});
+
 export const Category =  mongoose.model("Category", categoriesSchema);
 
 const subcategoriesSchema = new mongoose.Schema({
@@ -35,7 +47,7 @@ const subcategoriesSchema = new mongoose.Schema({
         required: true
     },
     category: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true,
         ref: "Category"
     }

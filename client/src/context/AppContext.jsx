@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import products from "../assets/products.js";
-import categories from "../assets/categories.js";
-import subcategories from "../assets/subcategories.js";
+import dummyProducts from "../assets/products.js";
+import dummyCategories from "../assets/categories.js";
+import dummySubcategories from "../assets/subcategories.js";
 import axios from "axios";
 
 const AppContext = createContext();
@@ -16,12 +16,17 @@ export const AppProvider = ({ children }) => {
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [isSeller, setIsSeller] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [products, setProducts] = useState(dummyProducts);
+  const [categories, setCategories] = useState(dummyCategories);
+  const [subcategories, setSubcategories] = useState(dummySubcategories);
   const currency = "₹";
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     fetchUser();
+    fetchCategories();
+    fetchSubcategories();
   }, []);
   const fetchUser = async () => {
     try {
@@ -56,6 +61,28 @@ export const AppProvider = ({ children }) => {
       }
     } catch (error) {
       console.error(error.message);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const { data } = await axios.get(`/api/admin/categories`, {
+        withCredentials: true,
+      });
+      setCategories(data.categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error.message);
+    }
+  };
+
+  const fetchSubcategories = async () => {
+    try {
+      const { data } = await axios.get(`/api/admin/subcategories`, {
+        withCredentials: true,
+      });
+      setSubcategories(data.subcategories);
+    } catch (error) {
+      console.error("Error fetching subcategories:", error.message);
     }
   };
   //add product to cart

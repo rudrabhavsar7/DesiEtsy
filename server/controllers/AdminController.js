@@ -90,3 +90,30 @@ export const isAuth = async (req, res) => {
     return res.status(500).json({ success: false, error: "Server error" });
   }
 };
+
+export const getArtisans = async (req, res) => {
+  try {
+    const artisans = await Artisan.find();
+    res.json({ success: true, artisans });
+  } catch (error) {
+    console.error("Get artisans error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};
+
+export const verifyArtisan = async (req, res) => {
+  try {
+    const {artisanId,isVerified,comments} = req.body;
+    console.log(artisanId, isVerified, comments);
+    const artisan = await Artisan.findByIdAndUpdate(artisanId, {isVerified, comments, isRejected:!isVerified}, {new: true} );
+
+    if (!artisan) {
+      return res.status(404).json({ success: false, error: "Artisan not found" });
+    }
+
+    res.json({ success: true, artisan });
+  } catch (error) {
+    console.error("Get artisan by ID error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};

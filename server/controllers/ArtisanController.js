@@ -22,7 +22,6 @@ export const register = async (req, res) => {
     // Check if email already exists
     const existingArtisan = await Artisan.findOne({ email });
 
-    console.log("existingArtisan:", existingArtisan.isVerified);
     if (existingArtisan) {
       if (existingArtisan.isVerified) {
         return res

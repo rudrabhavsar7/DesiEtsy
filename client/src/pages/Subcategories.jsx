@@ -16,13 +16,10 @@ const Subcategories = () => {
 
   const currentCategory = categories.find((cat) => cat.path === category);
 
-   console.log(currentCategory)
   const currentSubcategories = React.useMemo(() => 
     subcategories.filter((subcat) => subcat.category === currentCategory?.path),
     [subcategories, currentCategory]
   );
-
-  console.log(currentSubcategories)
 
   useEffect(() => {
     // Fade-in the full section
