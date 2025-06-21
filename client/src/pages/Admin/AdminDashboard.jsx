@@ -7,9 +7,11 @@ import ProductsTab from "../../components/admin/ProductsTab";
 import ArtisansTab from "../../components/admin/ArtisansTab";
 import VerificationModal from "../../components/admin/VerificationModal";
 import CategoryTab from "../../components/admin/CategoryTab";
+import ConfirmationModal from "../../components/admin/ConfirmationModal";
+import EditProductModal from "../../components/admin/EditProductModal";
 
 const AdminDashboard = () => {
-  const { products, currency, axios, BACKEND_URL, navigate, setIsAdmin } =
+  const { products, currency, axios, BACKEND_URL, navigate, setIsAdmin, fetchProducts } =
     useAppContext();
   const [activeTab, setActiveTab] = useState("overview");
   const [showVerifyModal, setShowVerifyModal] = useState(false);
@@ -18,6 +20,10 @@ const AdminDashboard = () => {
   const [artisans, setArtisans] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [productToEdit, setProductToEdit] = useState(null);
 
   // Fetch artisans when component mounts
   const fetchArtisans = async () => {
@@ -121,12 +127,16 @@ const AdminDashboard = () => {
         formData.append("image", subcategoryData.image);
       }
 
-      const { data } = await axios.post(`/api/admin/subcategories/add`, formData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const { data } = await axios.post(
+        `/api/admin/subcategories/add`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (data.success) {
         toast.success("Subcategory added successfully");
@@ -141,11 +151,18 @@ const AdminDashboard = () => {
   };
 
   const handleDeleteCategory = async (categoryId) => {
-    if (window.confirm("Are you sure you want to delete this category? This will also delete all associated subcategories.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this category? This will also delete all associated subcategories."
+      )
+    ) {
       try {
-        const { data } = await axios.delete(`/api/admin/categories/${categoryId}`, {
-          withCredentials: true,
-        });
+        const { data } = await axios.delete(
+          `/api/admin/categories/${categoryId}`,
+          {
+            withCredentials: true,
+          }
+        );
 
         if (data.success) {
           toast.success("Category deleted successfully");
@@ -156,7 +173,9 @@ const AdminDashboard = () => {
         }
       } catch (error) {
         console.error("Error deleting category:", error);
-        toast.error(error.response?.data?.message || "Failed to delete category");
+        toast.error(
+          error.response?.data?.message || "Failed to delete category"
+        );
       }
     }
   };
@@ -164,9 +183,12 @@ const AdminDashboard = () => {
   const handleDeleteSubcategory = async (subcategoryId) => {
     if (window.confirm("Are you sure you want to delete this subcategory?")) {
       try {
-        const { data } = await axios.delete(`/api/admin/subcategories/${subcategoryId}`, {
-          withCredentials: true,
-        });
+        const { data } = await axios.delete(
+          `/api/admin/subcategories/${subcategoryId}`,
+          {
+            withCredentials: true,
+          }
+        );
 
         if (data.success) {
           toast.success("Subcategory deleted successfully");
@@ -176,19 +198,19 @@ const AdminDashboard = () => {
         }
       } catch (error) {
         console.error("Error deleting subcategory:", error);
-        toast.error(error.response?.data?.message || "Failed to delete subcategory");
+        toast.error(
+          error.response?.data?.message || "Failed to delete subcategory"
+        );
       }
     }
   };
 
-  const pendingProducts = products.slice(0, 3).map((product) => ({
-    ...product,
-    status: "pending",
-    artisanName: "Artisan " + Math.floor(Math.random() * 10),
-  }));
+  const pendingProducts = products.filter((product) => product.status === "pending")
 
   // Filter artisans by status
-  const pendingArtisans = artisans.filter((artisan) => !artisan.isVerified && !artisan.isRejected) || [
+  const pendingArtisans = artisans.filter(
+    (artisan) => !artisan.isVerified && !artisan.isRejected
+  ) || [
     {
       id: "A001",
       name: "Rajesh Kumar",
@@ -270,21 +292,50 @@ const AdminDashboard = () => {
 
   const handleVerify = async (approved) => {
     try {
-      const { data } = await axios.put(
-        `/api/admin/verify`,
-        { artisanId: approved.id, isVerified:approved.status, comments:approved.notes },
-        { withCredentials: true }
-      );
-      if(data.success) {
-        fetchArtisans();
-        const message = approved
-         ? `${modalType === "product"? "Product" : "Artisan"} approved successfully!`
-          : `${modalType === "product"? "Product" : "Artisan"} rejected.`;
+      const status = approved? "approved" : "rejected";
+      if (modalType === "product") {
+        const { data } = await axios.put(
+          `/api/admin/products/verify/${approved.id}`,
+          { status, notes: approved.notes },
+          { withCredentials: true }
+        );
+        console.log(data);
+        if (data.success) {
+          fetchProducts();
+          const message = approved
+            ? `${
+                modalType === "product" ? "Product" : "Artisan"
+              } approved successfully!`
+            : `${modalType === "product" ? "Product" : "Artisan"} rejected.`;
 
-        toast.success(message);
-        setShowVerifyModal(false);
+          toast.success(message);
+          setShowVerifyModal(false);
+        } else {
+          toast.error(data.message);
+        }
       } else {
-        toast.error(data.message);
+        const { data } = await axios.put(
+          `/api/admin/verify`,
+          {
+            artisanId: approved.id,
+            isVerified: approved.status,
+            comments: approved.notes,
+          },
+          { withCredentials: true }
+        );
+        if (data.success) {
+          fetchArtisans();
+          const message = approved
+            ? `${
+                modalType === "product" ? "Product" : "Artisan"
+              } approved successfully!`
+            : `${modalType === "product" ? "Product" : "Artisan"} rejected.`;
+
+          toast.success(message);
+          setShowVerifyModal(false);
+        } else {
+          toast.error(data.message);
+        }
       }
     } catch (error) {
       console.error("Verification error:", error);
@@ -313,6 +364,63 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleEditProduct = (product) => {
+    setProductToEdit(product);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteProduct = (product) => {
+    setProductToDelete(product);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteProduct = async () => {
+    try {
+      const { data } = await axios.delete(`/api/admin/products/delete/${productToDelete._id}`, {
+        withCredentials: true,
+      });
+      
+      if (data.success) {
+        toast.success("Product deleted successfully");
+        fetchProducts(); // Refresh products list
+        setShowDeleteModal(false);
+        setProductToDelete(null);
+      } else {
+        toast.error(data.message || "Failed to delete product");
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error(error.response?.data?.message || "Failed to delete product");
+    }
+  };
+
+  const handleSaveProduct = async (editedData) => {
+    try {
+      const { data } = await axios.put(
+        `/api/admin/products/edit/${productToEdit._id}`, 
+        {
+          inStock: editedData.inStock,
+          quantity: parseInt(editedData.quantity)
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      
+      if (data.success) {
+        toast.success("Product updated successfully");
+        fetchProducts(); // Refresh products list
+        setShowEditModal(false);
+        setProductToEdit(null);
+      } else {
+        toast.error(data.message || "Failed to update product");
+      }
+    } catch (error) {
+      console.error("Error updating product:", error);
+      toast.error(error.response?.data?.message || "Failed to update product");
+    }
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "overview":
@@ -322,11 +430,35 @@ const AdminDashboard = () => {
             pendingArtisans={pendingArtisans}
           />
         );
-      case "products":
+      case "pendingProducts":
         return (
           <ProductsTab
             pendingProducts={pendingProducts}
+            artisans = {artisans}
             onVerify={(product) => openVerifyModal(product, "product")}
+            title="Products Pending Approval"
+            status="pending"
+          />
+        );
+      case "approvedProducts":
+        return (
+          <ProductsTab
+            pendingProducts={products.filter(product => product.status === "approved")}
+            artisans = {artisans}
+            onEdit={handleEditProduct}
+            onDelete={handleDeleteProduct}
+            title="Approved Products"
+            status="approved"
+          />
+        );
+      case "rejectedProducts":
+        return (
+          <ProductsTab
+            pendingProducts={products.filter(product => product.status === "rejected")}
+            artisans = {artisans}
+            onVerify={(product) => openVerifyModal(product, "product")}
+            title="Rejected Products"
+            status="rejected"
           />
         );
       case "pendingArtisans":
@@ -413,14 +545,34 @@ const AdminDashboard = () => {
           Overview
         </button>
         <button
-          onClick={() => setActiveTab("products")}
+          onClick={() => setActiveTab("pendingProducts")}
           className={`px-4 py-2 rounded-md ${
-            activeTab === "products"
+            activeTab === "pendingProducts"
               ? "bg-amber-900 text-white"
               : "text-gray-700 hover:bg-amber-100"
           }`}
         >
-          Products Verification
+          Pending Products
+        </button>
+        <button
+          onClick={() => setActiveTab("approvedProducts")}
+          className={`px-4 py-2 rounded-md ${
+            activeTab === "approvedProducts"
+              ? "bg-amber-900 text-white"
+              : "text-gray-700 hover:bg-amber-100"
+          }`}
+        >
+          Approved Products
+        </button>
+        <button
+          onClick={() => setActiveTab("rejectedProducts")}
+          className={`px-4 py-2 rounded-md ${
+            activeTab === "rejectedProducts"
+              ? "bg-amber-900 text-white"
+              : "text-gray-700 hover:bg-amber-100"
+          }`}
+        >
+          Rejected Products
         </button>
         <button
           onClick={() => setActiveTab("pendingArtisans")}
@@ -442,26 +594,6 @@ const AdminDashboard = () => {
         >
           Approved Artisans
         </button>
-        <button
-          onClick={() => setActiveTab("rejectedArtisans")}
-          className={`px-4 py-2 rounded-md ${
-            activeTab === "rejectedArtisans"
-              ? "bg-amber-900 text-white"
-              : "text-gray-700 hover:bg-amber-100"
-          }`}
-        >
-          Rejected Artisans
-        </button>
-        <button
-          onClick={() => setActiveTab("categories")}
-          className={`px-4 py-2 rounded-md ${
-            activeTab === "categories"
-              ? "bg-amber-900 text-white"
-              : "text-gray-700 hover:bg-amber-100"
-          }`}
-        >
-          Categories & Subcategories
-        </button>
       </div>
 
       {/* Tab Content */}
@@ -476,6 +608,27 @@ const AdminDashboard = () => {
           type={modalType}
           onClose={() => setShowVerifyModal(false)}
           onVerify={handleVerify}
+        />
+      )}
+
+      {/* Edit Product Modal */}
+      <EditProductModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onSave={handleSaveProduct}
+        product={productToEdit}
+      />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && productToDelete && (
+        <ConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={confirmDeleteProduct}
+          title="Delete Product"
+          message={`Are you sure you want to delete "${productToDelete.name}"? This action cannot be undone.`}
+          confirmText="Delete"
+          cancelText="Cancel"
         />
       )}
     </div>

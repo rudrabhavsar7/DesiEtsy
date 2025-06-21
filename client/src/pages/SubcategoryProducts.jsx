@@ -12,6 +12,7 @@ const SubcategoryProducts = () => {
       (scat) => scat.path === subcategory
     );
     
+    console.log("Subcategory: ", findSubcategory);
   const filteredProducts = products.filter(
     (product) => product.category === findSubcategory.title
   );

@@ -7,8 +7,20 @@ const productSchema = new mongoose.Schema({
     offerPrice: { type: Number, required: true },
     images: { type: Array, required: true },
     description: { type: Array, required: true },
-    quantity: { type: Number, required: true },
-    inStock: { type: Boolean, required: true },
+    sizes:{
+        type: [
+            { size: String, quantity: Number  }
+        ],
+        default:[]
+    },
+    quantity: { type: Number },
+    inStock: { type: Boolean, required: true, default: true },
+    status: { type: String, default: "pending" },
+    notes:{ type: String, default: "" },
+    artisanId: { type: String, required: true, ref: "Artisan" },
+
 },{timestamps: true});
 
-export default Product = mongoose.model("Product", productSchema);
+const Product = mongoose.model("Product", productSchema);
+
+export default Product;

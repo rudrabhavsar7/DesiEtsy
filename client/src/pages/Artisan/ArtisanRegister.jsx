@@ -4,7 +4,7 @@ import { useAppContext } from "../../context/AppContext";
 
 const ArtisanRegister = () => {
   const { navigate, axios, toast,isSeller, setIsSeller } = useAppContext();
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   // Registration form states
   const [name, setName] = useState("");
@@ -30,7 +30,7 @@ const ArtisanRegister = () => {
       email,
       phone,
       password,
-      aadhaarId: id, // Changed to match backend field name
+      id,
       street,
       city,
       state,

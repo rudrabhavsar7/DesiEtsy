@@ -27,6 +27,7 @@ export const AppProvider = ({ children }) => {
     fetchUser();
     fetchCategories();
     fetchSubcategories();
+    fetchProducts();
   }, []);
   const fetchUser = async () => {
     try {
@@ -83,6 +84,18 @@ export const AppProvider = ({ children }) => {
       setSubcategories(data.subcategories);
     } catch (error) {
       console.error("Error fetching subcategories:", error.message);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const { data } = await axios.get(`/api/artisan/products`, {
+        withCredentials: true,
+      });
+      console.log("Fetched products:", data);
+      setProducts(data.products);
+    } catch (error) {
+      console.error("Error fetching products:", error.message);
     }
   };
   //add product to cart
@@ -239,7 +252,11 @@ export const AppProvider = ({ children }) => {
         setIsSeller,
         isAdmin,
         setIsAdmin,
-        fetchSeller
+        fetchSeller,
+        fetchCategories,
+        fetchSubcategories,
+        fetchProducts,
+        fetchUser,
       }}
     >
       {children}

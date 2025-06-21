@@ -1,8 +1,8 @@
 import React from "react";
 
-const ProductsTab = ({ pendingProducts, onVerify }) => (
+const ProductsTab = ({ pendingProducts,artisans, onVerify, onEdit, onDelete, title, status = "pending" }) => (
   <div>
-    <h2 className="text-xl font-semibold mb-4">Products Pending Verification</h2>
+    <h2 className="text-xl font-semibold mb-4">{title || "Products"}</h2>
     
     <div className="overflow-x-auto">
       <table className="min-w-full">
@@ -23,15 +23,43 @@ const ProductsTab = ({ pendingProducts, onVerify }) => (
                 {product.name}
               </td>
               <td className="px-4 py-2">{product.category}</td>
-              <td className="px-4 py-2">{product.artisanName}</td>
-              <td className="px-4 py-2">2023-10-18</td>
+              <td className="px-4 py-2">{artisans.find((artisan=> artisan._id === product.artisanId)).name}</td>
+              <td className="px-4 py-2">{product.createdAt ? product.createdAt.split("T")[0] : "2023-10-18"}</td>
               <td className="px-4 py-2">
-                <button 
-                  onClick={() => onVerify(product)}
-                  className="bg-amber-900 text-white px-3 py-1 rounded hover:bg-amber-800 transition-colors"
-                >
-                  Review
-                </button>
+                {status === "pending" && (
+                  <button 
+                    onClick={() => onVerify(product)}
+                    className="bg-amber-900 text-white px-3 py-1 rounded hover:bg-amber-800 transition-colors mr-2"
+                  >
+                    Review
+                  </button>
+                )}
+                
+                {status === "approved" && (
+                  <>
+                    <button 
+                      onClick={() => onEdit(product)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors mr-2"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => onDelete(product)}
+                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+                
+                {status === "rejected" && (
+                  <button 
+                    onClick={() => onVerify(product)}
+                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-colors"
+                  >
+                    Reconsider
+                  </button>
+                )}
               </td>
             </tr>
           ))}

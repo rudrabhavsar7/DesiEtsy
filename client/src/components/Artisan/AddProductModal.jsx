@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useAppContext } from "../../context/AppContext";
 
 const AddProductModal = ({ categories, subcategories, onClose }) => {
-  const { isSeller, axios } = useAppContext();
+  const { isSeller, axios, toast, fetchProducts } = useAppContext();
   const [formData, setFormData] = useState({
     name: "",
     description: [""],
@@ -132,41 +132,55 @@ const AddProductModal = ({ categories, subcategories, onClose }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    try {
-      // Prepare the data for submission
-      const productData = { ...formData, artisanId: isSeller._id };
+  try {
+    const formDataObj = new FormData();
 
-      console.log(productData);
-      // Format sizes with quantities for fashion items
-      if (isFashionCategory && formData.sizes.length > 0) {
-        productData.sizes = formData.sizes.map((size) => ({
-          size,
-          quantity: sizeQuantities[size] || 0,
-        }));
-      }
+    formDataObj.append("name", formData.name);
+    formDataObj.append("category", formData.category);
+    formDataObj.append("price", formData.price);
+    formDataObj.append("offerPrice", formData.offerPrice || 0);
+    formDataObj.append("description", formData.description);
+    formDataObj.append("quantity", formData.quantity);
+    formDataObj.append("artisanId", isSeller._id);
 
-      const { data } = await axios.post(
-        "/api/artisan/products/add",
-        productData
-      );
-
-      console.log(data);
-
-      // // Simulate API call
-      // await new Promise(resolve => setTimeout(resolve, 1000));
-      // toast.success('Product added successfully!');
-      onClose();
-    } catch (error) {
-      console.error("Error adding product:", error);
-      toast.error("Failed to add product.");
-    } finally {
-      setIsSubmitting(false);
+    // Handle fashion category size structure
+    if (isFashionCategory && formData.sizes.length > 0) {
+      const sizes = formData.sizes.map((size) => ({
+        size,
+        quantity: sizeQuantities[size] || 0,
+      }));
+      formDataObj.append("sizes", JSON.stringify(sizes)); // important: stringify objects
     }
-  };
+
+    // Add all image files
+    for (let i = 0; i < formData.images.length; i++) {
+      formDataObj.append("images", formData.images[i]);
+    }
+
+    const { data } = await axios.post("/api/artisan/products/add", formDataObj, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (data.success) {
+        toast.success("Product added successfully!");
+        fetchProducts();
+    } else {
+      toast.error(data.message);
+    }
+    onClose();
+  } catch (error) {
+    console.error("Error adding product:", error);
+    toast.error("Failed to add product.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <motion.div

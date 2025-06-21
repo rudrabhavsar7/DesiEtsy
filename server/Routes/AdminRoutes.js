@@ -15,6 +15,7 @@ import {
   getAllSubcategories,
 } from "../controllers/CategoryController.js";
 import upload from "../config/multer.js";
+import { approveProduct, deleteProduct, updateProduct } from "../controllers/ProductController.js";
 
 const router = express.Router();
 
@@ -38,5 +39,9 @@ router.post(
 router.get("/categories", getAllCategories);
 router.get("/subcategories", getAllSubcategories);
 router.delete("/categories/:categoryId", authAdmin, deleteCategory);
+
+router.put("/products/verify/:productId",authAdmin,approveProduct); 
+router.delete("/products/delete/:productId", authAdmin, deleteProduct);
+router.put("/products/edit/:productId", authAdmin, updateProduct);
 
 export default router;
