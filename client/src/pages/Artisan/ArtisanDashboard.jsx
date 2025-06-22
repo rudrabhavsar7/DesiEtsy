@@ -45,15 +45,11 @@ const ArtisanDashboard = () => {
   };
   
   const handleProductUpdate = (updatedProduct) => {
-    // Update the products list with the updated product
+
     const updatedProducts = products.map(p => 
       p._id === updatedProduct._id ? updatedProduct : p
     );
     
-    // You might need to update your global state here depending on your implementation
-    // For example: setProducts(updatedProducts);
-    
-    toast.success('Product updated successfully');
     setShowEditProductModal(false);
     setSelectedProduct(null);
   };

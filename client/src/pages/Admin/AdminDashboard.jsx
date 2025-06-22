@@ -205,7 +205,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const pendingProducts = products.filter((product) => product.status === "pending")
+  const pendingProducts = products.filter((product) => product.status === "pending");
 
   // Filter artisans by status
   const pendingArtisans = artisans.filter(
@@ -346,7 +346,7 @@ const AdminDashboard = () => {
   const handleLogout = async () => {
     try {
       const { data } = await axios.post(
-        `${BACKEND_URL}/api/admin/logout`,
+        `/api/admin/logout`,
         {},
         { withCredentials: true }
       );
@@ -433,8 +433,8 @@ const AdminDashboard = () => {
       case "pendingProducts":
         return (
           <ProductsTab
-            pendingProducts={pendingProducts}
-            artisans = {artisans}
+            pendingProducts={products.filter(product => product.status === "pending")}
+            artisans={artisans}
             onVerify={(product) => openVerifyModal(product, "product")}
             title="Products Pending Approval"
             status="pending"
@@ -444,7 +444,7 @@ const AdminDashboard = () => {
         return (
           <ProductsTab
             pendingProducts={products.filter(product => product.status === "approved")}
-            artisans = {artisans}
+            artisans={artisans}
             onEdit={handleEditProduct}
             onDelete={handleDeleteProduct}
             title="Approved Products"

@@ -49,18 +49,19 @@ const Cart = () => {
   (cartItems &&
     cartItems.map((cartItem) => {
       const { productId, size, quantity } = cartItem;
-
+      
       const product = products.find((product) => product._id === productId);
 
       return {
         id: productId + (size ? `_${size}` : ""),
         size,
-        quantity,
         ...product,
+        quantity,
       };
     })) ||
   [];
 
+ 
 
   const handleRemoveItem = (itemId) => {
     removeFromCart(itemId);
@@ -300,7 +301,7 @@ const Cart = () => {
               <div className="relative">
                 <div className="flex justify-between items-start">
                   <p className="text-gray-500">
-                    {selectedAddress
+                    {user && selectedAddress
                       ? `${selectedAddress.street},${selectedAddress.city},${selectedAddress.state},${selectedAddress.country}`
                       : "No address found"}
                   </p>

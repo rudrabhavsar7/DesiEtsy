@@ -4,9 +4,11 @@ import ProductCard from "../components/ProductCard";
 import { motion } from "framer-motion";
 
 const Products = () => {
-  const { products, subcategories } = useAppContext();
+  let { products, subcategories } = useAppContext();
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+
+  products = products.filter(product => product.status === "approved");
 
   const handleChange = (e) => {
     const { checked, value } = e.target;

@@ -13,7 +13,8 @@ import SubcategoryProducts from './pages/SubcategoryProducts'
 import ProductDetails from './components/ProductDetails'
 import Orders from './pages/Orders'
 import AdminDashboard from './pages/Admin/AdminDashboard'
-import AdminLogin from './components/admin/AdminLogin' // Import the new component
+import AdminLogin from './components/admin/AdminLogin'
+import SearchResults from "./pages/SearchResults"; 
 
 // Artisan Dashboard
 import ArtisanDashboard from './pages/Artisan/ArtisanDashboard'
@@ -53,6 +54,9 @@ function App() {
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/admin/dashboard/*" element={isAdmin ? <AdminDashboard /> : <AdminLogin />} />
+
+      {/* Search Route */}
+      <Route path="/search" element={<SearchResults />} /> 
     </Routes>
     </>
   )

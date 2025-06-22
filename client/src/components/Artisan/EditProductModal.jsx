@@ -9,7 +9,7 @@ const EditProductModal = ({ product, categories, subcategories, onClose, onUpdat
   const [selectedCategory, setSelectedCategory] = useState('');
   const [formData, setFormData] = useState({
     name: '',
-    description: [''],
+    description: [],
     price: '',
     offerPrice: '',
     category: '',
@@ -49,7 +49,7 @@ const EditProductModal = ({ product, categories, subcategories, onClose, onUpdat
       // Initialize form data from product
       setFormData({
         name: product.name || '',
-        description: Array.isArray(product.description) ? product.description : [product.description || ''],
+        description: Array.isArray(product.description) ? product.description : [],
         price: product.price || '',
         offerPrice: product.offerPrice || '',
         category: product.category || '',

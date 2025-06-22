@@ -138,7 +138,11 @@ const ProductDetails = () => {
               <p className="text-base font-medium mt-4 sm:mt-6">About Product</p>
               <ul className="list-disc ml-4 text-gray-500/70">
                 {product.description.map((desc, index) => (
-                  <li key={index} className="text-sm sm:text-base my-1">{desc}</li>
+                  desc.split(",").map((item, idx) => (
+                    <li key={`${index}-${idx}`} className="text-sm sm:text-base my-1">
+                      {item.trim()}
+                    </li>
+                  ))
                 ))}
               </ul>
 

@@ -159,6 +159,8 @@ export const editProduct = async (req, res) => {
   try {
     const { productId } = req.params;
     const { name, price, offerPrice, description, sizes, artisanId } = req.body;
+
+    console.log(JSON.parse(description))
     const images = req.files;
     if (!productId) {
       return res
@@ -172,7 +174,7 @@ export const editProduct = async (req, res) => {
         name,
         price,
         offerPrice,
-        description,
+        description: JSON.parse(description),
         sizes: JSON.parse(sizes) || [],
         artisanId,
       },

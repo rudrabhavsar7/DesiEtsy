@@ -43,7 +43,7 @@ const Navbar = () => {
       name: "Home",
       logos: {
         closed: closehome,
-        active: activehome,
+        active: closehome,
       },
       bgColor: "bg-primary",
       path: "/",
@@ -54,13 +54,27 @@ const Navbar = () => {
         closed: closedproduct,
         active: activeproduct,
       },
-      bgColor: "bg-green-500",
+      bgColor: "bg-primary",
       path: "/products",
     },
   ];
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+  }
+  
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (search.trim()) {
+      navigate(`/search?q=${encodeURIComponent(search.trim())}`);
+      setShowMobileSearch(false);
+    }
+  }
+  
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Home");
-  const [search, setSearch] = useState(true);
+  const [search, setSearch] = useState("");
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   return (
     <nav className="fixed flex top-0 left-0 right-0 flex-wrap justify-between items-center z-50 w-full bg-transparent px-4 sm:px-6 md:px-16 lg:px-24 xl:px-32 py-4 transition-all">
@@ -105,14 +119,18 @@ const Navbar = () => {
       {/* Right Section */}
       <div className="hidden md:flex w-auto justify-end border-2 border-amber-900 rounded-full">
         <div className="flex justify-center items-center gap-4 lg:gap-8 bg-white rounded-full w-fit py-1 px-2">
-          <div className="hidden lg:flex items-center text-sm gap-2 border border-black px-3 rounded-full">
+          <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center text-sm gap-2 border border-black px-3 rounded-full">
             <input
               className="py-1.5 w-full bg-transparent outline-none placeholder-black"
               type="text"
               placeholder="Search products"
+              value={search}
+              onChange={handleSearch}
             />
-            <img src={closedsearch} className="h-5" alt="activesearch" />
-          </div>
+            <button type="submit">
+              <img src={closedsearch} className="h-5" alt="search" />
+            </button>
+          </form>
 
           <Link to="/cart">
             <div className="relative cursor-pointer">
@@ -155,9 +173,18 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className="md:hidden flex items-center">
+      {/* Mobile Right Section */}
+      <div className="md:hidden flex items-center gap-2">
+        {/* Mobile Search Toggle */}
+        <button 
+          onClick={() => setShowMobileSearch(!showMobileSearch)}
+          className="bg-white p-2 rounded-full"
+        >
+          <img src={closedsearch} className="h-5" alt="search" />
+        </button>
+        
         <Link to="/cart">
-          <div className="md:hidden bg-white p-2 rounded-full relative items-end">
+          <div className="bg-white p-2 rounded-full relative">
             <img className="h-5" src={cart} alt="cart" />
             <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">
               {getCartCount()}
@@ -169,7 +196,7 @@ const Navbar = () => {
         <button
           onClick={() => setOpen(!open)}
           aria-label="Menu"
-          className="md:hidden ml-auto bg-amber-900 rounded-full p-2.5"
+          className="bg-amber-900 rounded-full p-2.5"
         >
           <svg
             width="21"
@@ -185,9 +212,28 @@ const Navbar = () => {
         </button>
       </div>
 
+      {/* Mobile Search Bar - Appears below navbar */}
+      {showMobileSearch && (
+        <div className="md:hidden absolute top-full left-0 w-full px-4 py-2 bg-white shadow-md z-40">
+          <form onSubmit={handleSearchSubmit} className="flex items-center w-full border border-amber-900 rounded-full px-3 py-1">
+            <input
+              className="flex-1 bg-transparent outline-none placeholder-gray-500 text-sm"
+              type="text"
+              placeholder="Search products"
+              value={search}
+              onChange={handleSearch}
+              autoFocus
+            />
+            <button type="submit">
+              <img src={closedsearch} className="h-5" alt="search" />
+            </button>
+          </form>
+        </div>
+      )}
+
       {/* Mobile Menu */}
       {open && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg rounded-lg">
+        <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg rounded-lg z-50">
           <div className="flex flex-col p-4 gap-3 justify-center items-center">
             {navItems.map((item, idx) => (
               <NavLink

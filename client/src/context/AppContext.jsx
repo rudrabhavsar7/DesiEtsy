@@ -92,7 +92,6 @@ export const AppProvider = ({ children }) => {
       const { data } = await axios.get(`/api/artisan/products`, {
         withCredentials: true,
       });
-      console.log("Fetched products:", data);
       setProducts(data.products);
     } catch (error) {
       console.error("Error fetching products:", error.message);
@@ -145,7 +144,6 @@ export const AppProvider = ({ children }) => {
     const size = itemId.split("_")[1];
 
     let cartData = structuredClone(cartItems);
-    console.log(cartData);
 
     const product = size
       ? (cartData.find(
@@ -153,7 +151,7 @@ export const AppProvider = ({ children }) => {
         ).quantity = Number(quantity))
       : (cartData.find((item) => item.productId === id).quantity =
           Number(quantity));
-    console.log(product);
+ 
     setCartItems(cartData);
     toast.success("Cart Updated");
   };
@@ -212,8 +210,9 @@ export const AppProvider = ({ children }) => {
           userId: user._id, // pass userId from the user object
           cartItems,
         });
+
         if (data.success) {
-          toast.success(data.message);
+          
         } else {
           toast.error(data.message);
         }
