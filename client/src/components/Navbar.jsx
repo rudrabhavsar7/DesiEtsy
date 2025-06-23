@@ -144,8 +144,7 @@ const Navbar = () => {
           {user ? (
             <div className="relative group flex justify-center flex-col items-center">
               {/* Trigger Icon */}
-              <div className="cursor-pointer"></div>
-              Profile
+              <div className="cursor-pointer">{user.name}</div>
               {/* Dropdown */}
               <ul className="absolute top-full right-0 mt-2 bg-white shadow-lg border border-gray-200 py-2 w-40 rounded-md text-sm z-40 opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 invisible group-hover:visible">
                 <li

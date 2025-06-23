@@ -3,19 +3,26 @@ import mongoose from "mongoose";
 const orderSchema = new mongoose.Schema(
   {
     userId: { type: String, required: true, ref: "user" },
-    items: [
+    orderItems: [
       {
         product: { type: String, required: true, ref: "product" },
         quantity: { type: Number, required: true },
+        size: { type: String },
+        price: { type: Number },
+        image: {
+          type: String,
+        },
       },
     ],
     amount: { type: Number, required: true },
-    address: { type: String, required: true, ref: "address" },
-    status: { type: String, default: "Order Placed" },
-    paymentType: { type: String, required: true },
+    shippingAddress: { type: Object, required: true, ref: "address" },
+    status: { type: String, default: "Processing" },
+    paymentMethod: { type: String, required: true },
     isPaid: { type: Boolean, required: true, default: false },
   },
   { timestamps: true }
 );
 
-export default Order = mongoose.model("order", orderSchema);
+const Order = mongoose.model("order", orderSchema);
+
+export default Order;

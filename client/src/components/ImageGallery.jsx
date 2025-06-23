@@ -51,7 +51,7 @@ const ImageGallery = () => {
             start: "top 50%",
             end: "30% 60%",
             toggleActions: "play none none reverse",
-            markers: true,
+            markers: false,
           },
         }
       );
@@ -69,7 +69,7 @@ const ImageGallery = () => {
             start: "top 50%",
             end: "30% 60%",
             toggleActions: "play none none reverse",
-            markers: true,
+            markers: false,
           },
         }
       );

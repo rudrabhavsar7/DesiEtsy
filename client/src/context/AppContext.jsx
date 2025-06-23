@@ -19,6 +19,7 @@ export const AppProvider = ({ children }) => {
   const [products, setProducts] = useState(dummyProducts);
   const [categories, setCategories] = useState(dummyCategories);
   const [subcategories, setSubcategories] = useState(dummySubcategories);
+  const [orders, setOrders] = useState([]);
   const currency = "₹";
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -28,6 +29,7 @@ export const AppProvider = ({ children }) => {
     fetchCategories();
     fetchSubcategories();
     fetchProducts();
+    fetchOrders();
   }, []);
   const fetchUser = async () => {
     try {
@@ -39,6 +41,7 @@ export const AppProvider = ({ children }) => {
         setUser(data.user);
         setShowUserLogin(false);
         setCartItems(data.user.cart);
+        setOrders(data.user.orders);
       } else {
         setUser(false);
         setCartItems([]);
@@ -95,6 +98,23 @@ export const AppProvider = ({ children }) => {
       setProducts(data.products);
     } catch (error) {
       console.error("Error fetching products:", error.message);
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const { data } = await axios.get(`/api/cart/orders`, {
+        withCredentials: true,
+      });
+      if(data.success){
+        setOrders(data.orders);
+        console.log("Orders fetched successfully:", data.orders);
+      }
+      else{
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error.message);
     }
   };
   //add product to cart
@@ -204,7 +224,7 @@ export const AppProvider = ({ children }) => {
   //update cart items
   useEffect(() => {
     const updateCart = async () => {
-      console.log(cartItems);
+     
       try {
         const { data } = await axios.post("/api/cart/update", {
           userId: user._id, // pass userId from the user object
@@ -255,7 +275,8 @@ export const AppProvider = ({ children }) => {
         fetchCategories,
         fetchSubcategories,
         fetchProducts,
-        fetchUser,
+        fetchOrders,
+        orders
       }}
     >
       {children}

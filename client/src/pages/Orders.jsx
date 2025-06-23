@@ -4,48 +4,19 @@ import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 
 const Orders = () => {
-  const { user,setShowUserLogin } = useAppContext();
+  const { user,setShowUserLogin,orders,currency,navigate } = useAppContext();
   const [activeTab, setActiveTab] = useState('all');
   
   // Sample order data - replace with actual data from your context or API
-  const sampleOrders = [
-    {
-      id: 'ORD-2023-001',
-      date: '2023-11-15',
-      status: 'delivered',
-      total: 149.99,
-      items: [
-        { id: 1, name: 'Handcrafted Silk Saree', price: 129.99, quantity: 1, image: '' },
-        { id: 2, name: 'Wooden Elephant Figurine', price: 19.99, quantity: 1, image: '' }
-      ]
-    },
-    {
-      id: 'ORD-2023-002',
-      date: '2023-11-28',
-      status: 'processing',
-      total: 89.99,
-      items: [
-        { id: 3, name: 'Brass Diya Set', price: 49.99, quantity: 1, image: '' },
-        { id: 4, name: 'Embroidered Cushion Cover', price: 39.99, quantity: 1, image: '' }
-      ]
-    },
-    {
-      id: 'ORD-2023-003',
-      date: '2023-12-05',
-      status: 'shipped',
-      total: 219.99,
-      items: [
-        { id: 5, name: 'Handwoven Pashmina Shawl', price: 199.99, quantity: 1, image: '' },
-        { id: 6, name: 'Sandalwood Incense Sticks', price: 19.99, quantity: 1, image: '' }
-      ]
-    }
-  ];
+  const sampleOrders = orders || [];
 
   // Filter orders based on active tab
   const filteredOrders = sampleOrders.filter(order => {
     if (activeTab === 'all') return true;
     return order.status === activeTab;
   });
+
+  console.log("Filtered Orders:", filteredOrders);
 
   // Animation variants
   const containerVariants = {
@@ -139,16 +110,16 @@ const Orders = () => {
             {filteredOrders.length > 0 ? (
               filteredOrders.map((order) => (
                 <motion.div
-                  key={order.id}
+                  key={order._id}
                   variants={itemVariants}
                   className="bg-white rounded-2xl border-2 border-amber-900/10 shadow-md overflow-hidden"
                 >
                   {/* Order header */}
                   <div className="bg-amber-100/50 px-4 py-3 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between border-b border-amber-900/10">
                     <div>
-                      <h3 className="text-lg font-medium text-amber-900">Order #{order.id}</h3>
+                      <h3 className="text-lg font-medium text-amber-900">Order #{order._id}</h3>
                       <p className="text-sm text-amber-800/70">
-                        Placed on {new Date(order.date).toLocaleDateString('en-US', { 
+                        Placed on {new Date(order.createdAt).toLocaleDateString('en-US', { 
                           year: 'numeric', 
                           month: 'long', 
                           day: 'numeric' 
@@ -158,15 +129,16 @@ const Orders = () => {
                     <div className="mt-2 sm:mt-0 flex items-center">
                       {getStatusBadge(order.status)}
                       <span className="ml-4 text-lg font-medium text-amber-900">
-                        ${order.total.toFixed(2)}
+                        {currency}{order.amount.toFixed(2)}
                       </span>
                     </div>
                   </div>
                   
                   {/* Order items */}
                   <div className="divide-y divide-amber-100">
-                    {order.items.map((item) => (
-                      <div key={item.id} className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center">
+                    {order.orderItems.map((item) => (
+
+                      <div key={item._id} className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center">
                         <div className="w-full sm:w-16 h-16 bg-amber-50 rounded-lg overflow-hidden flex-shrink-0 mb-4 sm:mb-0">
                           <img 
                             src={item.image} 
@@ -181,16 +153,16 @@ const Orders = () => {
                         <div className="sm:ml-6 flex-1">
                           <h4 className="text-base font-medium text-amber-900">{item.name}</h4>
                           <p className="mt-1 text-sm text-amber-800/70">
-                            Qty: {item.quantity} × ${item.price.toFixed(2)}
+                            Qty: {item.quantity} × {currency}{item.price.toFixed(2)}
                           </p>
                         </div>
                         <div className="mt-4 sm:mt-0">
-                          <Link 
-                            to={`/products/category/subcategory/${item.id}`} 
+                          <button 
+                            onClick={() => navigate(`/products/category/subcategory/${item.productId}`)} 
                             className="text-sm font-medium text-amber-700 hover:text-amber-900 hover:underline"
                           >
                             View Product
-                          </Link>
+                          </button>
                         </div>
                       </div>
                     ))}

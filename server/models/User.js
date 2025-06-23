@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const User = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   email: {
     type: String,
@@ -12,47 +12,31 @@ const User = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   role: {
     type: String,
     enum: ["admin", "user", "artisan"],
-    default: "user"
+    default: "user",
   },
   cart: {
     type: [
       {
         productId: {
           type: String,
-          ref: "Product"
+          ref: "Product",
         },
         quantity: {
           type: Number,
-          default: 1
+          default: 1,
         },
         size: {
-          type: String
-        }
-      }
-    ],
-    default: []
-  },
-  orders: {
-    type: [
-      {
-        orderId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Order"
+          type: String,
         },
-        orderDate: {
-          type: Date,
-          default: Date.now
-        }
-      }
+      },
     ],
-    default: []
-  }
+    default: [],
+  },
 });
-
 
 export default mongoose.models.User || mongoose.model("User", User);

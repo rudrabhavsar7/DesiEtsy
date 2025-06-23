@@ -166,7 +166,7 @@ const AddProductModal = ({ categories, subcategories, onClose }) => {
         "Content-Type": "multipart/form-data",
       },
     });
-
+    
     if (data.success) {
         toast.success("Product added successfully!");
         fetchProducts();

@@ -19,7 +19,7 @@ const Cart = () => {
   } = useAppContext();
 
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState("COD");
+  const [selectedPayment, setSelectedPayment] = useState("cod");
   const [showAddress, setShowAddress] = useState(false);
   const [address, setAddress] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState([]);
@@ -27,7 +27,7 @@ const Cart = () => {
   const getUserAddress = async () => {
     try {
       const { data } = await axios.get("/api/address/get");
-      console.log(data);
+      
       if (data.success) {
         setAddress(data.addresses);
         setSelectedAddress(data.addresses[0]);
@@ -67,8 +67,58 @@ const Cart = () => {
     removeFromCart(itemId);
   };
 
-  const handlePlaceOrder = () => {
-    setIsProcessing(true);
+  const handlePlaceOrder = async () => {
+
+    if(!selectedAddress || Object.keys(selectedAddress).length === 0) {
+      toast.error("Please select a delivery address");
+      return;
+    }
+
+    if (productsList.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    if(!user){
+      toast.error("Please login to place an order");
+      return;
+    }
+
+    if (selectedPayment === "cod") {
+      try {
+        console.log(productsList);
+        // Call API to place order
+        const { data } = await axios.post("/api/cart/order/cash", {
+          userId: user._id,
+          orderItems: productsList.map((item) => ({
+            product: item._id,
+            quantity: item.quantity,
+            size: item.size || null,
+            price: item.price * item.quantity,
+            image: item.images[0],
+          })),
+          shippingAddress: selectedAddress,
+          paymentMethod: selectedPayment,
+          totalAmount: getCartAmount(),
+        });
+
+
+
+        console.log(data);
+        if (data.success) {
+          toast.success("Order placed successfully!");
+          // Clear cart and redirect to home page
+          // clearCart(); // You would need to implement this in your context
+          navigate("/orders");
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    // setIsProcessing(true);
     // Simulate order processing
     setTimeout(() => {
       setIsProcessing(false);
@@ -348,8 +398,8 @@ const Cart = () => {
                 onChange={(e) => setSelectedPayment(e.target.value)}
                 className="w-full border border-gray-300 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
-                <option value="COD">Cash On Delivery</option>
-                <option value="Online">Online Payment</option>
+                <option value="cod">Cash On Delivery</option>
+                <option value="online">Online Payment</option>
               </select>
             </div>
           </div>

@@ -45,7 +45,10 @@ export const addProduct = async (req, res) => {
         return result.secure_url;
       })
     );
-    const newProduct = new Product({
+
+    let newProduct
+    if(sizes){
+      newProduct = new Product({
       name,
       category: categoryPath.title,
       price,
@@ -56,7 +59,20 @@ export const addProduct = async (req, res) => {
       quantity,
       images: imagesUrls,
     });
-
+    }
+    else{
+      newProduct = new Product({
+      name,
+      category: categoryPath.title,
+      price,
+      offerPrice,
+      description,
+      artisanId,
+      quantity,
+      images: imagesUrls,
+    })
+  }
+    
     console.log("new Product", newProduct);
     await newProduct.save();
     res.json({
@@ -64,7 +80,10 @@ export const addProduct = async (req, res) => {
       message: "Product added successfully",
       newProduct,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
 };
 
 export const deleteProduct = async (req, res) => {
