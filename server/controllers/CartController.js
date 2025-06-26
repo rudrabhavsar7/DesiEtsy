@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import Order from "../models/Order.js";
+import Stripe from "stripe";
 
 
 // Update User CartData : /api/cart/update
@@ -39,7 +40,8 @@ export const placeOrderbyCash = async (req, res) => {
     // Save the order to the database
     await newOrder.save();
     // Update the user's cart to empty
-    console.log(newOrder);
+    
+    await User.findByIdAndUpdate(userId,{cart:[]})
 
     res.json({
       success: true,
@@ -50,6 +52,58 @@ export const placeOrderbyCash = async (req, res) => {
     console.log("Error placing order:", error.message);
     res.json({ success: false, message: error.message });
   }
+}
+
+export const placeOrderByStripe = async (req, res) => {
+  try {
+    const { userId, orderItems, shippingAddress, paymentMethod, totalAmount } = req.body;
+    const totalPrice = totalAmount + (totalAmount * 0.02)
+
+    // Create a new order document
+    const newOrder = new Order({
+      userId,
+      orderItems,
+      shippingAddress,
+      paymentMethod,
+      amount: totalPrice,
+    });
+    // Save the order to the database
+    await newOrder.save();
+
+    // Set up Stripe
+    const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+    const line_items = orderItems.map((item) => {
+      return {
+        price_data: {
+          currency: "inr",
+          product_data: {
+            image:item.image
+          },
+          unit_amount: Math.floor(item.price + item.price * 0.02) * 100,
+        },
+        quantity: item.quantity,
+      };
+    });
+
+    const session = await stripeInstance.checkout.sessions.create({
+      line_items,
+      mode: "payment",
+      success_url: `${process.env.FRONTEND_URL}/orders`,
+      cancel_url: `${process.env.FRONTEND_URL}/cart`,
+      metadata: {
+        orderId: newOrder._id.toString(),
+        userId,
+      },
+    });
+
+    res.json({ success: true, message: "Order placed successfully", order: newOrder });
+  } catch (error) {
+    console.log("Error placing order:", error.message);
+    res.json({ success: false, message: error.message });
+  }
+  // Note: You'll need to handle errors and validation in your own application.
+
 }
     
 export const getOrdersById = async (req, res) => {

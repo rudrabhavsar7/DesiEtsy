@@ -265,8 +265,15 @@ const Navbar = () => {
               <>
                 <NavLink
                   to="/orders"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center p-3 w-full justify-center rounded-full hover:bg-amber-100 transition-colors text-amber-900"
+                  onClick={() => {
+                    setActiveTab("Orders");
+                    setOpen(false);
+                  }}
+                  className={`flex items-center p-3 w-full justify-center rounded-full hover:bg-amber-100 transition-colors text-amber-900  ${
+                  activeTab === "Orders"
+                    ? "bg-amber-900 text-white"
+                    : "text-amber-900"
+                }`}
                 >
                   <span className="text-sm font-medium">Orders</span>
                 </NavLink>

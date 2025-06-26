@@ -169,6 +169,15 @@ const Login = () => {
           <div className="mt-6 grid grid-cols-1 gap-3">
             <button
               type="button"
+              onClick={() => {
+                try {
+                  window.location.href = `${BACKEND_URL}/api/user/oauth/google`;
+                } catch (error) {
+                  console.error("Google OAuth error:", error);
+                  toast.error("Failed to connect with Google. Please try again.");
+                  
+                }
+              }}
               className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-full shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

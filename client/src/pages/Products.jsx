@@ -20,25 +20,21 @@ const Products = () => {
     }
   };
 
-  // Check screen size on initial load
+  
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
-        // Don't hide filters on large screens
       } else {
-        // Keep filters hidden by default on small screens
         setShowFilters(false);
       }
     };
     
-    // Run once on mount
     handleResize();
     
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Get unique categories from products for filtering
   const uniqueCategories = [...new Set(products.map(product => product.category))];
   
   // Filter products based on selected categories
@@ -76,7 +72,7 @@ const Products = () => {
         </button>
       </div>
       
-      {/* Sidebar Filter - Desktop (always visible) */}
+      {/* Sidebar Filter - Desktop */}
       <div className="hidden lg:block border-2 w-1/5 max-w-[20%] h-auto lg:h-auto rounded-t-2xl rounded-br-2xl bg-white p-4 sticky top-20">
         <h1 className="text-center text-xl font-custom text-amber-900 border-b-2 pb-2 rounded-2xl">Filters</h1>
         <h2 className="text-md px-2 mt-4">Category</h2>
@@ -105,7 +101,7 @@ const Products = () => {
         )}
       </div>
       
-      {/* Sidebar Filter - Mobile (collapsible) */}
+      {/* Sidebar Filter - Mobile */}
       <motion.div 
         className="lg:hidden border-2 w-full max-w-full h-auto rounded-t-2xl rounded-br-2xl bg-white p-4"
         initial={{ height: 0, opacity: 0 }}

@@ -96,6 +96,7 @@ const Cart = () => {
             size: item.size || null,
             price: item.price * item.quantity,
             image: item.images[0],
+            artisanId: item.artisanId || null,
           })),
           shippingAddress: selectedAddress,
           paymentMethod: selectedPayment,
@@ -118,16 +119,32 @@ const Cart = () => {
       }
     }
 
-    // setIsProcessing(true);
-    // Simulate order processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      // Show success message or redirect
-      alert("Order placed successfully!");
-      // Clear cart and redirect to home page
-      // clearCart(); // You would need to implement this in your context
-      navigate("/");
-    }, 1500);
+    if (selectedPayment === "online") {
+      try {
+        // Call API to place order
+        const { data } = await axios.post("/api/cart/order/online", {
+          userId: user._id,
+          orderItems: productsList.map((item) => ({
+            product: item._id,
+            quantity: item.quantity,
+            size: item.size || null,
+            price: item.price * item.quantity,
+            image: item.images[0],
+          })),
+          shippingAddress: selectedAddress,
+          paymentMethod: selectedPayment,
+          totalAmount: getCartAmount(),
+        });
+
+        if (data.success) {
+          toast.success("Order placed successfully!");
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error.message);
+      } 
+    }
   };
 
   // Empty cart state

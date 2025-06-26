@@ -1,26 +1,8 @@
-import React,{useState,useEffect} from 'react'
-import { useAppContext } from '../../context/AppContext';
+import React, { useState, useEffect } from "react";
+import { useAppContext } from "../../context/AppContext";
 
-const OrdersTab = ({ currency }) =>{
-
+const OrdersTab = ({ currency, orders }) => {
   const { axios } = useAppContext();
-
-  const [orders, setOrders] = useState([]);
-
-  const fetchOrders = async () => {
-    try {
-      const {data} = await axios.get('/api/artisan/orders');
-      console.log("Fetched Orders:", data);
-      setOrders(data.orders);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      return [];
-    }
-  };
-  
-  useEffect(() => {
-    fetchOrders();
-  }, []);
 
   return (
     <div>
@@ -41,7 +23,10 @@ const OrdersTab = ({ currency }) =>{
             {orders.map((order) => (
               <tr key={order._id} className="border-t">
                 <td className="px-4 py-2">{order._id}</td>
-                <td className="px-4 py-2">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</td>
+                <td className="px-4 py-2">
+                  {order.shippingAddress.firstName}{" "}
+                  {order.shippingAddress.lastName}
+                </td>
                 <td className="px-4 py-2">
                   {currency}
                   {order.amount}
@@ -67,6 +52,6 @@ const OrdersTab = ({ currency }) =>{
       </div>
     </div>
   );
-}
+};
 
-export default OrdersTab
+export default OrdersTab;

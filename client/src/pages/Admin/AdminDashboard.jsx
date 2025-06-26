@@ -24,6 +24,7 @@ const AdminDashboard = () => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [productToEdit, setProductToEdit] = useState(null);
+  const [users, setUsers] = useState(0);
 
   // Fetch artisans when component mounts
   const fetchArtisans = async () => {
@@ -40,6 +41,23 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       toast.error("Failed to fetch artisans");
+    }
+  };
+
+  //fetch users
+  const fetchUsers = async () => {
+    try {
+      const { data } = await axios.get(`/api/admin/users`, {
+        withCredentials: true,
+      });
+
+      if (data.success) {
+        setUsers(data.users.length);
+      } else {
+        toast.error("Failed to fetch users");
+      }
+    } catch (error) {
+      toast.error("Failed to fetch users");
     }
   };
 
@@ -80,6 +98,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchArtisans();
+    fetchUsers();
     fetchCategories();
     fetchSubcategories();
   }, []);
@@ -428,6 +447,7 @@ const AdminDashboard = () => {
           <OverviewTab
             pendingProducts={pendingProducts}
             pendingArtisans={pendingArtisans}
+            totalUsers={users}
           />
         );
       case "pendingProducts":
@@ -501,6 +521,7 @@ const AdminDashboard = () => {
           <OverviewTab
             pendingProducts={pendingProducts}
             pendingArtisans={pendingArtisans}
+            totalUsers={users}
           />
         );
     }
@@ -593,6 +614,17 @@ const AdminDashboard = () => {
           }`}
         >
           Approved Artisans
+        </button>
+
+        <button
+          onClick={() => setActiveTab("categories")}
+          className={`px-4 py-2 rounded-md ${
+            activeTab === "categories"
+              ? "bg-amber-900 text-white"
+              : "text-gray-700 hover:bg-amber-100"
+          }`}
+        >
+          Categories
         </button>
       </div>
 

@@ -1,5 +1,5 @@
 import React from "react";
-const OverviewTab = ({ pendingProducts, pendingArtisans }) => (
+const OverviewTab = ({ pendingProducts, pendingArtisans, totalUsers }) => (
   <div>
     <h2 className="text-xl font-semibold mb-4">Dashboard Overview</h2>
     
@@ -14,7 +14,7 @@ const OverviewTab = ({ pendingProducts, pendingArtisans }) => (
       </div>
       <div className="bg-blue-100 p-4 rounded-lg">
         <h3 className="text-sm text-gray-600">Total Users</h3>
-        <p className="text-2xl font-bold">124</p>
+        <p className="text-2xl font-bold">{totalUsers}</p>
       </div>
     </div>
     
