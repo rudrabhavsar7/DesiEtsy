@@ -29,8 +29,8 @@ export const AppProvider = ({ children }) => {
     fetchCategories();
     fetchSubcategories();
     fetchProducts();
-    fetchOrders();
   }, []);
+
   const fetchUser = async () => {
     try {
       const { data } = await axios.get(`/api/user/is-auth`, {
@@ -42,6 +42,7 @@ export const AppProvider = ({ children }) => {
         setShowUserLogin(false);
         setCartItems(data.user.cart);
         setOrders(data.user.orders);
+        fetchOrders();
       } else {
         setUser(false);
         setCartItems([]);
@@ -106,9 +107,8 @@ export const AppProvider = ({ children }) => {
       const { data } = await axios.get(`/api/cart/orders`, {
         withCredentials: true,
       });
-      if(data.success){
+      if (data.success) {
         setOrders(data.orders);
-        console.log("Orders fetched successfully:", data.orders);
       }
       else{
         toast.error(data.message);

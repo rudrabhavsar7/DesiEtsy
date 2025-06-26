@@ -15,6 +15,7 @@ import Orders from './pages/Orders'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminLogin from './components/admin/AdminLogin'
 import SearchResults from "./pages/SearchResults"; 
+import OAuthSuccess from './components/OAuthSuccess'
 
 // Artisan Dashboard
 import ArtisanDashboard from './pages/Artisan/ArtisanDashboard'
@@ -40,6 +41,7 @@ function App() {
     {!isAdminPath && !isArtisanPath && <Navbar />}
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/oauth-success" element={<OAuthSuccess />} />
       <Route path="/products" element={<Products/>} />
       <Route path="/products/:category/:subcategory/:id" element={<ProductDetails/>} />
       <Route path="/products/:category" element={<Subcategories />} />

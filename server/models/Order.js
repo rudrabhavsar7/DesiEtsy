@@ -12,6 +12,10 @@ const orderSchema = new mongoose.Schema(
         image: {
           type: String,
         },
+        artisanId: {
+          type:String,
+          ref : "artisans"
+        }
       },
     ],
     amount: { type: Number, required: true },

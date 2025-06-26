@@ -64,7 +64,7 @@ const Address = () => {
   }, []);
 
   return (
-    <div className="mt-16 pb-16 flex justify-center items-center flex-col">
+    <div className="mt-25 pb-16 flex justify-center items-center flex-col">
       <p className="text-2xl md:text-3xl text-grey-500 ">
         Add Shipping <span className="font-semibold text-primary">Address</span>
       </p>

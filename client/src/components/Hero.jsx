@@ -4,7 +4,7 @@ import gsap from "gsap";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-// Register GSAP plugins if needed
+
 // import { ScrollTrigger } from "gsap/ScrollTrigger";
 // gsap.registerPlugin(ScrollTrigger);
 
@@ -82,7 +82,6 @@ const Hero = () => {
     }
   }, [isPaused]);
 
-  // Background pattern based on current image
   const getPatternStyle = () => {
     const currentImage = images[currentIndex];
     return {
@@ -95,7 +94,7 @@ const Hero = () => {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-amber-50">
-      {/* Decorative background elements */}
+      
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-amber-900/10 blur-3xl"></div>
         <div className="absolute top-[60%] -right-[5%] w-[30%] h-[40%] rounded-full bg-amber-700/10 blur-3xl"></div>

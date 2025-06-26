@@ -80,7 +80,7 @@ const ProductDetails = () => {
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 mt-2 w-full">
             {/* Left Side - Product Images */}
             <div className="flex flex-col-reverse sm:flex-row gap-4 items-center sm:items-start w-full lg:w-1/2">
-              {/* Thumbnails - Horizontal on mobile, vertical on desktop */}
+              {/* Thumbnails */}
               <div className="flex flex-row sm:flex-col gap-3 overflow-x-auto sm:overflow-visible py-2 sm:py-0 w-full sm:w-auto">
                 {product.images.map((image, index) => (
                   <div
@@ -146,7 +146,7 @@ const ProductDetails = () => {
                 ))}
               </ul>
 
-              {product?.sizes && (
+              {product?.sizes && product.sizes.length > 0 && (
                 <div className="mt-4 sm:mt-5">
                   <div className="flex justify-between items-center">
                     <p className="text-base font-medium">Select Size</p>

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export const authArtisan = (req, res, next) => {
-  const { token } = req.cookies;
+  const token = req.cookies.artisanToken;
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized access" });

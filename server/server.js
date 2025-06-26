@@ -9,6 +9,8 @@ import addressRouter from "./Routes/AddressRoutes.js";
 import cartRouter from "./Routes/CartRoutes.js";
 import artisanRouter from "./Routes/ArtisanRoute.js";
 import adminRouter from "./Routes/AdminRoutes.js";
+import passport from 'passport';
+import './config/passport.js'; 
 
 const app = express();
 
@@ -18,7 +20,7 @@ app.use(cors({origin:'http://localhost:5173',
 }));
 app.use(cookieParser());
 
-
+app.use(passport.initialize());
 app.use('/api/user',userRouter);
 app.use('/api/address', addressRouter);
 app.use('/api/cart', cartRouter);

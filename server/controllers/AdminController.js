@@ -1,5 +1,6 @@
 import Admin from "../models/Admin.js";
 import Artisan from "../models/Artisan.js";
+import User from '../models/User.js';
 import jwt from "jsonwebtoken";
 
 export const login = async (req, res) => {
@@ -100,6 +101,17 @@ export const getArtisans = async (req, res) => {
     res.status(500).json({ success: false, error: "Server error" });
   }
 };
+
+export const getUsers = async (req,res) => {
+  try {
+    const users = await User.find();
+    res.json({success:true, users})
+
+  } catch (error) {
+    console.error("Get users error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+}
 
 export const verifyArtisan = async (req, res) => {
   try {

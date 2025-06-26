@@ -5,6 +5,7 @@ import {
   isAuth,
   getArtisans,
   verifyArtisan,
+  getUsers,
 } from "../controllers/AdminController.js";
 import { authAdmin } from "../middleware/adminAuth.js";
 import {
@@ -23,6 +24,7 @@ router.post("/login", login);
 router.post("/logout", logout);
 router.get("/is-auth", authAdmin, isAuth);
 router.get("/artisans", authAdmin, getArtisans);
+router.get('/users',authAdmin,getUsers);
 router.put("/verify", authAdmin, verifyArtisan);
 router.post(
   "/categories/add",

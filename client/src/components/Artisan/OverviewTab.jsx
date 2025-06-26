@@ -1,4 +1,4 @@
-const OverviewTab = ({ products, currency }) => (
+const OverviewTab = ({ products, currency, orders }) => (
   <div>
     <h2 className="text-xl font-semibold mb-4">Dashboard Overview</h2>
     
@@ -9,11 +9,11 @@ const OverviewTab = ({ products, currency }) => (
       </div>
       <div className="bg-green-100 p-4 rounded-lg">
         <h3 className="text-sm text-gray-600">Total Sales</h3>
-        <p className="text-2xl font-bold">{currency}12,500</p>
+        <p className="text-2xl font-bold">{currency}{orders.reduce((acc, order) => acc + order.amount, 0)}</p>
       </div>
       <div className="bg-blue-100 p-4 rounded-lg">
         <h3 className="text-sm text-gray-600">Total Orders</h3>
-        <p className="text-2xl font-bold">24</p>
+        <p className="text-2xl font-bold">{orders.length}</p>
       </div>
     </div>
     
