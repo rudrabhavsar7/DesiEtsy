@@ -154,6 +154,7 @@ const Hero = () => {
               className="absolute inset-0 flex items-center justify-center"
             >
               <motion.img
+                loading="lazy"
                 src={images[currentIndex]?.link}
                 alt={images[currentIndex]?.name || "Product image"}
                 className="h-[80%] w-[80%] object-contain drop-shadow-2xl"

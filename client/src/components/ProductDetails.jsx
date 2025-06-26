@@ -90,7 +90,7 @@ const ProductDetails = () => {
                       thumbnail === image ? "ring-2 ring-amber-900" : ""
                     }`}
                   >
-                    <img src={image} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+                    <img loading="lazy" src={image} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
                   </div>
                 ))}
               </div>

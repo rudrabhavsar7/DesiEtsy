@@ -1,4 +1,4 @@
-import React,{useState,useMemo} from "react";
+import React, { useState, useMemo } from "react";
 import { useRef } from "react";
 import img1 from "../assets/images/imageGallery/img1.png";
 import img2 from "../assets/images/imageGallery/img2.png";
@@ -14,11 +14,10 @@ import { useAppContext } from "../context/AppContext";
 gsap.registerPlugin(ScrollTrigger);
 
 const ImageGallery = () => {
+  const [activeIndex, setActiveIndex] = useState(null);
+  const images = useMemo(() => [img2, img1, img5], []);
 
-   const [activeIndex, setActiveIndex] = useState(null);
-   const images = useMemo(()=>[img2, img1, img5],[]);
-
-   const {navigate} = useAppContext();
+  const { navigate } = useAppContext();
   useGSAP(() => {
     const leftSide = gsap.utils.toArray(".left-ref");
     const rightSide = gsap.utils.toArray(".right-ref");
@@ -86,7 +85,7 @@ const ImageGallery = () => {
           <div
             style={{ backgroundImage: `url(${img4})` }}
             className="left-ref bg-cover bg-center relative h-1/2 w-full flex flex-col transition-all duration-500 ease-in-out cursor-pointer"
-            onClick={()=>navigate('/products/fashion')}
+            onClick={() => navigate("/products/fashion")}
           >
             <div
               // style={{ backgroundImage: `url(${img2})` }}
@@ -124,11 +123,10 @@ const ImageGallery = () => {
                 ? "w-full h-full z-10"
                 : "w-0 h-0 opacity-0"
             }`}
-            onClick={() =>
-              setActiveIndex(activeIndex === index ? null : index)
-            }
+            onClick={() => setActiveIndex(activeIndex === index ? null : index)}
           >
             <img
+              loading="lazy"
               src={img}
               alt={`img-${index}`}
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"

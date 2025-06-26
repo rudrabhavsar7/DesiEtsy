@@ -34,6 +34,7 @@ const ProductCard = ({ product }) => {
         {/* Image */}
         <div className="w-full h-48 sm:h-52 md:h-60 flex items-center justify-center overflow-hidden rounded-md">
           <img
+            loading="lazy"
             className="object-contain h-full transition-transform duration-300 ease-in-out group-hover:scale-105"
             src={product.images[0]}
             alt={product.name}
